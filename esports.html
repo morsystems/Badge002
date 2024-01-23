@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    form input {
+      padding: 8px;
+      margin-right: 10px;
+      flex: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    .chart-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Player Dashboard</h1>
+  </header>
+
+  <div class="container">
+
+    <form id="playerForm">
+      <input type="text" id="playerName" placeholder="Player Name" required>
+      <input type="number" id="playerScore" placeholder="Player Score" required>
+      <button type="button" onclick="addPlayer()">Add Player</button>
+    </form>
+
+    <table id="playerTable">
+      <thead>
+        <tr>
+          <th>Player Name</th>
+          <th>Player Score</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="chart-container">
+      <canvas id="performanceChart"></canvas>
+    </div>
+
+  </div>
+
+  <script>
+    const playerForm = document.getElementById('playerForm');
+    const playerNameInput = document.getElementById('playerName');
+    const playerScoreInput = document.getElementById('playerScore');
+    const playerTableBody = document.querySelector('#playerTable tbody');
+    const performanceChartCanvas = document.getElementById('performanceChart');
+
+    let players = [];
+
+    function addPlayer() {
+      const playerName = playerNameInput.value;
+      const playerScore = parseInt(playerScoreInput.value);
+
+      if (playerName && !isNaN(playerScore)) {
+        players.push({ name: playerName, score: playerScore });
+        updatePlayerTable();
+        updatePerformanceChart();
+        playerNameInput.value = '';
+        playerScoreInput.value = '';
+      }
+    }
+
+    function updatePlayerTable() {
+      playerTableBody.innerHTML = '';
+      players.forEach(player => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${player.name}</td><td>${player.score}</td>`;
+        playerTableBody.appendChild(row);
+      });
+    }
+
+    function updatePerformanceChart() {
+      const labels = players.map(player => player.name);
+      const scores = players.map(player => player.score);
+
+      const ctx = performanceChartCanvas.getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Player Performance',
+            data: scores,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+</html>
